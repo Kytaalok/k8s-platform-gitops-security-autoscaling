@@ -28,6 +28,11 @@ spec:
           ports:
             - containerPort: {{ .Values.service.targetPort }}
               name: http
+{{- if .Values.externalSecret.enabled }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.externalSecret.targetSecretName }}
+{{- end }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
           securityContext:

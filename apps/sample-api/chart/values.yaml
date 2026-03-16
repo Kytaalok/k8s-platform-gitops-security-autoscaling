@@ -21,6 +21,23 @@ ingress:
     secretName: sample-api-tls
     clusterIssuer: selfsigned-cluster-issuer
 
+externalSecret:
+  enabled: true
+  refreshInterval: 1h
+  store:
+    kind: ClusterSecretStore
+    name: shared-secrets-store
+  targetSecretName: sample-api-runtime
+  data:
+    - secretKey: API_KEY
+      remoteRef:
+        key: sample-api-runtime
+        property: API_KEY
+    - secretKey: DATABASE_URL
+      remoteRef:
+        key: sample-api-runtime
+        property: DATABASE_URL
+
 resources:
   requests:
     cpu: 100m
