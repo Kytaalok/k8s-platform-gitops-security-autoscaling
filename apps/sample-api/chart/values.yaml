@@ -10,6 +10,17 @@ service:
   port: 80
   targetPort: 8000
 
+ingress:
+  enabled: true
+  className: nginx
+  host: sample-api.localdev.me
+  path: /
+  pathType: Prefix
+  tls:
+    enabled: true
+    secretName: sample-api-tls
+    clusterIssuer: selfsigned-cluster-issuer
+
 resources:
   requests:
     cpu: 100m

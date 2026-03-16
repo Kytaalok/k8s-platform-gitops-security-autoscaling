@@ -14,7 +14,7 @@ Portfolio project for junior+/middle- DevOps track.
 - Packaging: Helm.
 - Security: Pod Security Standards, NetworkPolicies, Trivy, Conftest/OPA.
 - Autoscaling: HPA + KEDA.
-- Policy as Code: Conftest + OPA/Rego.
+- TLS: ingress-nginx + cert-manager ClusterIssuer.
 - CI: GitHub Actions.
 
 ## Repository Layout
@@ -54,16 +54,23 @@ See [docs/architecture.md](docs/architecture.md).
      - `kubectl apply -f gitops/apps/workloads-root.yaml`
 4. Check sync status:
    - `kubectl get applications -n argocd`
+5. Access sample API via ingress:
+   - Host configured by default: `sample-api.localdev.me`
+   - TLS issuer default: `selfsigned-cluster-issuer`
 
 ## What This Baseline Deploys
 - `dev-apps` namespace with Pod Security labels.
 - Default deny ingress/egress + DNS egress allow.
-- KEDA installation via Argo CD.
+- ingress-nginx installation via Argo CD.
+- cert-manager installation via Argo CD.
+- ClusterIssuers:
+  - `selfsigned-cluster-issuer` (works in local/dev),
+  - `letsencrypt-staging` (for public DNS test).
 - `sample-api` Helm release with:
   - secure container settings,
   - HPA (CPU-based),
   - KEDA `ScaledObject` (cron trigger),
-  - PDB and app-specific ingress allow policy.
+  - PDB, app-specific ingress allow policy, and Ingress TLS.
 
 ## CI Checks
 - Helm lint and render
@@ -73,7 +80,7 @@ See [docs/architecture.md](docs/architecture.md).
 
 ## What to Add Next
 - External Secrets + Vault integration.
-- cert-manager + ClusterIssuer + HTTPS ingress.
+- Production ClusterIssuer + DNS-01 challenge.
 - Runtime detection with Falco.
 - SLO dashboards + synthetic checks.
 - Terraform layer for cloud provisioning.

@@ -5,5 +5,8 @@ resources:
   - security/default-deny-ingress.yaml
   - security/default-deny-egress.yaml
   - security/allow-dns-egress.yaml
+  - platform/ingress-nginx-install.yaml
+  - platform/cert-manager-install.yaml
+  - platform/cert-manager-clusterissuers.yaml
   - platform/keda-install.yaml
   - apps
