@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sample-api
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  project: workloads
+  source:
+    repoURL: https://github.com/YOUR_GITHUB_USERNAME/k8s-platform-gitops-security-autoscaling.git
+    targetRevision: main
+    path: apps/sample-api/chart
+    helm:
+      releaseName: sample-api
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev-apps
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

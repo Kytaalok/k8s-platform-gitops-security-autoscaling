@@ -1,0 +1,44 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+
+      - name: Setup Kustomize
+        uses: imranismail/setup-kustomize@v2
+
+      - name: Setup Conftest
+        uses: instrumenta/conftest-action@master
+
+      - name: Helm lint
+        run: helm lint apps/sample-api/chart
+
+      - name: Helm template
+        run: helm template sample-api apps/sample-api/chart > sample-api-rendered.yaml
+
+      - name: Kustomize build
+        run: kustomize build clusters/dev > cluster-dev-rendered.yaml
+
+      - name: Conftest policies
+        run: conftest test sample-api-rendered.yaml -p policies/kubernetes
+
+      - name: Trivy IaC Scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: config
+          hide-progress: true
+          severity: HIGH,CRITICAL
+          exit-code: 1
+          scan-ref: .

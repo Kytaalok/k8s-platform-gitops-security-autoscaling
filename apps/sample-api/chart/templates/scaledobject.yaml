@@ -1,0 +1,18 @@
+{{- if .Values.keda.enabled }}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ include "sample-api.fullname" . }}
+spec:
+  scaleTargetRef:
+    name: {{ include "sample-api.fullname" . }}
+  minReplicaCount: {{ .Values.keda.minReplicas }}
+  maxReplicaCount: {{ .Values.keda.maxReplicas }}
+  triggers:
+    - type: cron
+      metadata:
+        timezone: {{ .Values.keda.timezone | quote }}
+        start: {{ .Values.keda.scaleUpStart | quote }}
+        end: {{ .Values.keda.scaleUpEnd | quote }}
+        desiredReplicas: "6"
+{{- end }}

@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: workloads-root
+  namespace: argocd
+spec:
+  project: workloads
+  source:
+    repoURL: https://github.com/YOUR_GITHUB_USERNAME/k8s-platform-gitops-security-autoscaling.git
+    targetRevision: main
+    path: clusters/dev/apps
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
