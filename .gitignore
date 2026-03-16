@@ -4,3 +4,5 @@
 *.log
 dist/
 tmp/
+secrets/dev/*.secret.yaml
+!secrets/dev/*.secret.yaml.example

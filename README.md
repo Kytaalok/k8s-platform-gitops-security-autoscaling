@@ -6,15 +6,15 @@ Portfolio project for junior+/middle- DevOps track.
 - Build a reproducible Kubernetes platform with GitOps delivery.
 - Enforce baseline security controls and policy checks.
 - Demonstrate horizontal and event-driven autoscaling patterns.
-- Keep deployment process auditable and CI-validated.
+- Manage application runtime secrets via External Secrets and SOPS.
 
 ## Stack
-- Kubernetes: `k3d`/`k3s` for local lab, cloud-managed cluster ready structure.
+- Kubernetes: `k3d`/`k3s` for local lab.
 - GitOps: Argo CD (App of Apps pattern).
 - Packaging: Helm.
 - Security: Pod Security Standards, NetworkPolicies, Trivy, Conftest/OPA.
 - Autoscaling: HPA + KEDA.
-- Policy as Code: Conftest + OPA/Rego.
+- Secrets: External Secrets Operator + SOPS (Age).
 - CI: GitHub Actions.
 
 ## Repository Layout
@@ -30,6 +30,7 @@ Portfolio project for junior+/middle- DevOps track.
 +-- policies/
 ¦   L-- kubernetes/                        # OPA/Rego policies for CI
 +-- scripts/                               # Bootstrap and validation scripts
++-- secrets/                               # SOPS-managed secret templates/workflow
 L-- .github/workflows/ci.yaml              # CI checks
 ```
 
@@ -52,28 +53,35 @@ See [docs/architecture.md](docs/architecture.md).
      - `kubectl apply -f gitops/projects/workloads-project.yaml`
      - `kubectl apply -f gitops/apps/platform-root.yaml`
      - `kubectl apply -f gitops/apps/workloads-root.yaml`
-4. Check sync status:
+4. Provision sample runtime secret source via SOPS:
+   - create encrypted secret file from template:
+     - `./scripts/encrypt-secret.ps1 -AgeRecipient "<age-public-key>"`
+   - decrypt+apply to cluster:
+     - `./scripts/apply-secret.ps1`
+5. Check sync status:
    - `kubectl get applications -n argocd`
 
 ## What This Baseline Deploys
-- `dev-apps` namespace with Pod Security labels.
+- `dev-apps` and `shared-secrets` namespaces.
 - Default deny ingress/egress + DNS egress allow.
 - KEDA installation via Argo CD.
+- External Secrets Operator installation via Argo CD.
+- ClusterSecretStore backed by Kubernetes provider (`shared-secrets` namespace).
 - `sample-api` Helm release with:
   - secure container settings,
-  - HPA (CPU-based),
-  - KEDA `ScaledObject` (cron trigger),
-  - PDB and app-specific ingress allow policy.
+  - HPA and KEDA autoscaling,
+  - ExternalSecret resource,
+  - secret-based environment injection.
 
 ## CI Checks
-- Helm lint and render
-- Kustomize build for `clusters/dev`
-- Conftest policy validation
-- Trivy IaC scan
+- Helm lint and render.
+- Kustomize build for `clusters/dev`.
+- Conftest policy validation.
+- Trivy IaC scan.
 
 ## What to Add Next
-- External Secrets + Vault integration.
 - cert-manager + ClusterIssuer + HTTPS ingress.
+- External Secrets backend migration to Vault.
 - Runtime detection with Falco.
 - SLO dashboards + synthetic checks.
 - Terraform layer for cloud provisioning.
