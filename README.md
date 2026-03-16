@@ -14,6 +14,7 @@ Portfolio project for junior+/middle- DevOps track.
 - Packaging: Helm.
 - Security: Pod Security Standards, NetworkPolicies, Trivy, Conftest/OPA.
 - Autoscaling: HPA + KEDA.
+- TLS: ingress-nginx + cert-manager ClusterIssuer.
 - Secrets: External Secrets Operator + SOPS (Age).
 - CI: GitHub Actions.
 
@@ -60,16 +61,25 @@ See [docs/architecture.md](docs/architecture.md).
      - `./scripts/apply-secret.ps1`
 5. Check sync status:
    - `kubectl get applications -n argocd`
+6. Access sample API via ingress:
+   - Host configured by default: `sample-api.localdev.me`
+   - TLS issuer default: `selfsigned-cluster-issuer`
 
 ## What This Baseline Deploys
 - `dev-apps` and `shared-secrets` namespaces.
 - Default deny ingress/egress + DNS egress allow.
+- ingress-nginx installation via Argo CD.
+- cert-manager installation via Argo CD.
 - KEDA installation via Argo CD.
 - External Secrets Operator installation via Argo CD.
+- ClusterIssuers:
+  - `selfsigned-cluster-issuer` (works in local/dev),
+  - `letsencrypt-staging` (for public DNS test).
 - ClusterSecretStore backed by Kubernetes provider (`shared-secrets` namespace).
 - `sample-api` Helm release with:
   - secure container settings,
   - HPA and KEDA autoscaling,
+  - Ingress TLS,
   - ExternalSecret resource,
   - secret-based environment injection.
 
@@ -80,8 +90,8 @@ See [docs/architecture.md](docs/architecture.md).
 - Trivy IaC scan.
 
 ## What to Add Next
-- cert-manager + ClusterIssuer + HTTPS ingress.
 - External Secrets backend migration to Vault.
+- Production ClusterIssuer + DNS-01 challenge.
 - Runtime detection with Falco.
 - SLO dashboards + synthetic checks.
 - Terraform layer for cloud provisioning.

@@ -7,6 +7,9 @@ resources:
   - security/default-deny-egress.yaml
   - security/allow-dns-egress.yaml
   - security/external-secrets-access.yaml
+  - platform/ingress-nginx-install.yaml
+  - platform/cert-manager-install.yaml
+  - platform/cert-manager-clusterissuers.yaml
   - platform/keda-install.yaml
   - platform/external-secrets-install.yaml
   - secrets/cluster-secret-store.yaml
