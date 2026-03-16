@@ -35,10 +35,8 @@ jobs:
           policy: policies/kubernetes
 
       - name: Trivy IaC Scan
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          scan-type: config
-          hide-progress: true
-          severity: HIGH,CRITICAL
-          exit-code: 1
-          scan-ref: .
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/workdir" \
+            aquasec/trivy:0.56.1 \
+            config --severity HIGH,CRITICAL --exit-code 1 --no-progress /workdir
